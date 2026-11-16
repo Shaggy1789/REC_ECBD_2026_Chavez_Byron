@@ -29,26 +29,22 @@ def revisar_categorias(datos):
     }
 
 def limpiar_datos(datos):
-    """
-    Devuelve una copia sin duplicados exactos y con Month uniforme
-    El archivo original no se modifica
-    """
-
+    """Devuelve una copia limpia y un resumen de los cambios."""
     datos_limpios = datos.copy()
     filas_originales = len(datos_limpios)
     duplicados = revisar_duplicados(datos_limpios)
 
     datos_limpios = datos_limpios.drop_duplicates().copy()
-# El dataset mezcla "June" con abreviaturas de tres letras
-    if "Moth" in datos_limpios.columns:
-        datos_limpios["Moth"] = datos_limpios["Moth"].replace({"June": "Jun"})
 
-        resumen = {
-            "filas_originales": filas_originales,
-            "duplicados_detectados": duplicados,
-            "filas_finales": len(datos_limpios),
-            "filas_eliminadas": filas_originales - len(datos_limpios),
-            "valores_faltantes_finales": int(datos_limpios.isna().sum().sum()),
-        }
+    if "Month" in datos_limpios.columns:
+        datos_limpios["Month"] = datos_limpios["Month"].replace({"June": "Jun"})
 
-        return datos_limpios, resumen
+    resumen = {
+        "filas_originales": filas_originales,
+        "duplicados_detectados": duplicados,
+        "filas_finales": len(datos_limpios),
+        "filas_eliminadas": filas_originales - len(datos_limpios),
+        "valores_faltantes_finales": int(datos_limpios.isna().sum().sum()),
+    }
+
+    return datos_limpios, resumen
