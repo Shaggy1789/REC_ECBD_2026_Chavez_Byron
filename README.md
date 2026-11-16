@@ -284,5 +284,3 @@ Abrir y ejecutar todas las celdas de `notebooks/04_clustering_pca.ipynb`.
 - Revisar observaciones del docente y actualizar los notebooks en consecuencia.
 
 ---
-
-> Nota: este README fue actualizado para documentar todo lo subido al repositorio y servirte de referencia al presentar el proyecto. Si algo cambia, actualiza este documento junto con el código.
