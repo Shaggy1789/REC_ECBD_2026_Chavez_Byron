@@ -1,43 +1,54 @@
 import pandas as pd 
 
 def revisar_valores_faltantes(datos):
-    """Muestra la cantidad de valores daltantes por columna"""
-    faltantes = datos.isnull().sum()
-    porcentaje = (faltantes / len(datos)) * 100
-
-    resultado = pd.DataFrame({
-        "Valores Faltantes": faltantes,
-        "Porcentaje": porcentaje
+    faltantes = datos.isna().sum()
+    return pd.DataFrame({
+        "Valores faltantes": faltantes,
+        "Porcentaje": (faltantes/len(datos) * 100).round(2),
     })
 
-    return resultado
-
 def revisar_duplicados(datos):
-    """Cuenta los registros duplicados"""
-    return datos.duplicated().sum()
+    """Devuelve la cantidad de filas duplicadas exactas."""
+    return int(datos.duplicated().sum())
 
 def revisar_valores_negativos(datos):
-    columnas_numericas = datos.select_dtypes(include = "numer").columns
+    """Devuelve el conteo de negativos por columna numerica"""
+    columnas_numericas = datos.select_dtypes(include="number").columns
+    negativos = (datos[columnas_numericas] < 0).sum()
+    return negativos[negativos > 0].to_dict()
 
-    negativos = {}
-
-    for columna in columnas_numericas:
-        cantidad = (datos[columna] < 0).sum()
-
-        if cantidad > 0:
-            negativos[columna] = cantidad
-
-        return negativos
 
 def revisar_categorias(datos):
-    """Muestra los valores unicos de las columnas categoricas"""
     columnas_categoricas = datos.select_dtypes(
-        include = ["object","bool"]
+        include=["object","bool","string"]
     ).columns
 
-    categorias = {}
+    return{
+        columna: datos[columna].dropna().unique().tolist()
+        for columna in columnas_categoricas
+    }
 
-    for columna in columnas_categoricas:
-        categorias[columna] = datos[columna].unique().tolist()
+def limpiar_datos(datos):
+    """
+    Devuelve una copia sin duplicados exactos y con Month uniforme
+    El archivo original no se modifica
+    """
 
-    return categorias
+    datos_limpios = datos.copy()
+    filas_originales = len(datos_limpios)
+    duplicados = revisar_duplicados(datos_limpios)
+
+    datos_limpios = datos_limpios.drop_duplicates().copy()
+# El dataset mezcla "June" con abreviaturas de tres letras
+    if "Moth" in datos_limpios.columns:
+        datos_limpios["Moth"] = datos_limpios["Moth"].replace({"June": "Jun"})
+
+        resumen = {
+            "filas_originales": filas_originales,
+            "duplicados_detectados": duplicados,
+            "filas_finales": len(datos_limpios),
+            "filas_eliminadas": filas_originales - len(datos_limpios),
+            "valores_faltantes_finales": int(datos_limpios.isna().sum().sum()),
+        }
+
+        return datos_limpios, resumen
