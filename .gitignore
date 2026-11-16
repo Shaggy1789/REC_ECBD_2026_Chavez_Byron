@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# Archivos de salida si Jupyter usa notebooks/ como directorio de trabajo
+/notebooks/data/
+/notebooks/docs/
+/notebooks/modelos/
