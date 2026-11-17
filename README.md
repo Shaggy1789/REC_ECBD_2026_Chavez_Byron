@@ -18,7 +18,7 @@ Además se incluye un **dashboard interactivo** (Streamlit) para explorar los re
 
 ---
 
-## ¿Qué se hizo con Codex?
+## ¿Qué se hizo?
 
 Este proyecto fue construido con el apoyo de Codex (modelo de IA para programación). Eso significa que:
 
