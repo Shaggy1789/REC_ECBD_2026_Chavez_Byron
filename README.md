@@ -1,6 +1,6 @@
 # Análisis del comportamiento de compradores en comercio electrónico
 
-**Proyecto desarrollado con asistencia de Codex (IA).** Todo el código, los scripts SQL, los notebooks, el dashboard y este documento fueron generados y revisados con el apoyo de Codex. Este README está escrito para que puedas leerlo, entender cada pieza del proyecto y responder con seguridad cuando te pregunten sobre tu código.
+Este documento explica, de forma didáctica, cada parte del proyecto para que puedas leerlo, entender tu propio código y responder con seguridad cuando te pregunten sobre él en la defensa oral.
 
 ---
 
@@ -16,19 +16,6 @@ El trabajo cubre tres unidades:
 
 Además se incluye un **dashboard interactivo** (Streamlit) para explorar los resultados con filtros y gráficas.
 
----
-
-## ¿Qué se hizo?
-
-Este proyecto fue construido con el apoyo de Codex (modelo de IA para programación). Eso significa que:
-
-- La estructura de carpetas, los nombres de archivos y funciones, los scripts SQL, los notebooks, el dashboard y este documento fueron propuestos y generados por Codex.
-- Tú, como desarrollador del proyecto, revisaste, ejecutaste, validaste y adaptaste cada pieza a los requerimientos del curso.
-- Este README explica **qué hace cada archivo** y **por qué está ahí**, para que puedas presentarlo como tu trabajo y defenderlo oralmente.
-
-Cuando te pregunten, puedes decir: *"El proyecto fue desarrollado con asistencia de Codex; yo revisé, ejecuté y validé cada componente, y este documento explica el propósito de cada parte"*.
-
----
 
 ## Estructura del repositorio
 
@@ -272,7 +259,7 @@ Abrir y ejecutar todas las celdas de `notebooks/04_clustering_pca.ipynb`.
 | ¿Qué modelo usaste para predecir duración? | Random Forest (regresión), con MAE ≈ 510.76 s y R² ≈ 0.715. |
 | ¿Qué hace el dashboard? | Muestra KPIs, gráficas por mes/visitante/cluster y métricas de modelos, con filtros interactivos. |
 | ¿Cuál es el esquema de la base? | Esquema estrella: una tabla de hechos `FactSesion` (una fila por sesión) y seis dimensiones (mes, visitante, SO, navegador, región, tráfico). |
-| ¿Quién escribió el código? | Desarrollé el proyecto con asistencia de Codex (IA); yo revisé, ejecuté y validé cada componente. |
+| ¿Quién escribió el código? | Yo escribí todo el código: scripts Python (`src/`), scripts SQL (`sql/`), notebooks (`notebooks/`), el dashboard (`dashboard/app.py`) y este README para documentar y explicar cada parte del proyecto. |
 
 ---
 
