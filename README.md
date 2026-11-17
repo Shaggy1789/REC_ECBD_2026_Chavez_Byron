@@ -1,6 +1,6 @@
 # Análisis del comportamiento de compradores en comercio electrónico
 
-Este documento explica, de forma didáctica, cada parte del proyecto para que puedas leerlo, entender tu propio código y responder con seguridad cuando te pregunten sobre él en la defensa oral.
+**Proyecto desarrollado con asistencia de Codex (IA).** Todo el código, los scripts SQL, los notebooks, el dashboard y este documento fueron generados y revisados con el apoyo de Codex. Este README está escrito para que puedas leerlo, entender cada pieza del proyecto y responder con seguridad cuando te pregunten sobre tu código.
 
 ---
 
@@ -16,6 +16,7 @@ El trabajo cubre tres unidades:
 
 Además se incluye un **dashboard interactivo** (Streamlit) para explorar los resultados con filtros y gráficas.
 
+---
 
 ## Estructura del repositorio
 
@@ -259,7 +260,7 @@ Abrir y ejecutar todas las celdas de `notebooks/04_clustering_pca.ipynb`.
 | ¿Qué modelo usaste para predecir duración? | Random Forest (regresión), con MAE ≈ 510.76 s y R² ≈ 0.715. |
 | ¿Qué hace el dashboard? | Muestra KPIs, gráficas por mes/visitante/cluster y métricas de modelos, con filtros interactivos. |
 | ¿Cuál es el esquema de la base? | Esquema estrella: una tabla de hechos `FactSesion` (una fila por sesión) y seis dimensiones (mes, visitante, SO, navegador, región, tráfico). |
-| ¿Quién escribió el código? | Yo escribí todo el código: scripts Python (`src/`), scripts SQL (`sql/`), notebooks (`notebooks/`), el dashboard (`dashboard/app.py`) y este README para documentar y explicar cada parte del proyecto. |
+| ¿Quién escribió el código? | Desarrollé el proyecto con asistencia de Codex (IA); yo revisé, ejecuté y validé cada componente. |
 
 ---
 
