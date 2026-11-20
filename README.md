@@ -1,6 +1,6 @@
 # Análisis del comportamiento de compradores en comercio electrónico
 
-**Proyecto desarrollado con asistencia de Codex (IA).** Todo el código, los scripts SQL, los notebooks, el dashboard y este documento fueron generados y revisados con el apoyo de Codex. Este README está escrito para que puedas leerlo, entender cada pieza del proyecto y responder con seguridad cuando te pregunten sobre tu código.
+**Proyecto desarrollado con asistencia de herramientas de IA.** El código, los scripts SQL, los notebooks, los dashboards y este documento se elaboraron con apoyo de asistentes de IA (Claude, Codex, GitHub Copilot), y fueron revisados, ejecutados y validados manualmente. Este README está escrito para que puedas leerlo, entender cada pieza del proyecto y responder con seguridad cuando te pregunten sobre tu código.
 
 ---
 
@@ -10,11 +10,11 @@ Analizar las sesiones del **Online Shoppers Purchasing Intention Dataset** para 
 
 El trabajo cubre tres unidades:
 
-1. **Unidad II** — preparación de datos, ETL y diseño de un Data Mart en SQL Server.
+1. **Unidad II** — preparación de datos, diseño de un Data Mart en SQL Server y **ETL definitivo en SSIS (Visual Studio)**.
 2. **Unidad III** — análisis supervisado: predecir la duración en páginas de producto (regresión) y predecir si hay compra (clasificación).
 3. **Unidad IV** — análisis no supervisado: agrupamiento de sesiones con K-Means y reducción de dimensionalidad con PCA.
 
-Además se incluye un **dashboard interactivo** (Streamlit) para explorar los resultados con filtros y gráficas.
+**Visualización final:** el dashboard de entrega se desarrollará en **Power BI**. El dashboard Streamlit actual (`dashboard/app.py`) se conserva como herramienta complementaria y trabajo previo de exploración.
 
 ---
 
@@ -148,16 +148,16 @@ Gráficas iniciales con matplotlib y seaborn:
 
 ## SQL y Data Mart (`sql/`)
 
-Se diseña un **esquema estrella** con una tabla de hechos y seis dimensiones. El grano de `FactSesion` es **una sesión**.
+Se diseña un **esquema estrella** con una tabla de hechos y seis dimensiones. El grano de `FactSesion` es **una fila por cada registro procesado del dataset** (clave sustituta `SesionKey`; el dataset original no proporciona identificador único de sesión real).
 
 ### Archivos SQL
 
 - `sql/ddl/01_crear_base_y_datamart.sql` — Crea la base de datos `ECBD_Compradores`, las tablas de dimensiones y la tabla de hechos con sus claves primarias y foráneas.
 - `sql/dml/02_cargar_dataset.sql` — **Validación** de la carga realizada desde Python. Verifica conteos, integridad referencial y muestra una muestra de datos.
 
-### Carga de datos
+### Carga de datos — Preparación con Python (etapa actual)
 
-La carga del CSV procesado a SQL Server se realiza mediante Python:
+Actualmente, la carga del CSV procesado a SQL Server se realiza mediante Python como parte de la preparación y validación del diseño:
 
 ```powershell
 .venv\Scripts\python.exe -m src.etl.etl --cargar-sql
@@ -170,7 +170,9 @@ Este comando:
 4. Inserta en `FactSesion` usando consultas parametrizadas por lotes.
 5. Valida que el conteo de staging coincida con `FactSesion`.
 
-> No se usa `BULK INSERT` ni SQL puro para la carga. El script SQL `sql/dml/02_cargar_dataset.sql` solo valida.
+> **Nota importante:** Este script Python (`src/etl/etl.py` + `src/etl/cargar_sql.py`) es la implementación **de preparación y desarrollo**. El **ETL definitivo se implementará en SSIS (Visual Studio)** como parte de la Unidad II. Los scripts Python se conservan como trabajo previo, validación del modelo y apoyo al desarrollo del paquete SSIS.
+>
+> El script SQL `sql/dml/02_cargar_dataset.sql` solo valida la carga (conteos, integridad referencial, muestra de datos).
 
 ### Esquema (resumido)
 
@@ -182,7 +184,7 @@ Este comando:
 - `DimRegion` — región geográfica.
 - `DimTipoTrafico` — tipo de tráfico de llegada.
 
-**Tabla de hechos** (`FactSesion`) — una fila por sesión con las claves foráneas de cada dimensión más las medidas de navegación:
+**Tabla de hechos** (`FactSesion`) — **una fila por cada registro procesado del dataset** con las claves foráneas de cada dimensión más las medidas de navegación:
 - Duraciones: `Administrative_Duration`, `Informational_Duration`, `ProductRelated_Duration`.
 - Conteos: `Administrative`, `Informational`, `ProductRelated`.
 - Tasas: `BounceRates`, `ExitRates`, `PageValues`.
@@ -237,9 +239,9 @@ Todas las métricas se guardan en CSV dentro de `modelos/metricas/` para que el 
 
 ---
 
-## Dashboard interactivo (`dashboard/app.py`)
+## Dashboard interactivo (`dashboard/app.py`) — Herramienta complementaria
 
-Aplicación de Streamlit para explorar los resultados con filtros y gráficas.
+Aplicación de Streamlit para explorar los resultados con filtros y gráficas. **Se conserva como herramienta de apoyo y trabajo previo; el dashboard final de entrega se desarrollará en Power BI.**
 
 **Cómo se ejecuta:**
 ```powershell
@@ -262,58 +264,86 @@ El dashboard lee los archivos de `data/processed/` y `modelos/` directamente.
 
 ## Cómo ejecutar todo, paso a paso
 
+Esta guía distingue entre lo **ya implementado** (preparación, validación, modelos) y lo **pendiente** (ETL en SSIS, dashboard en Power BI).
+
 ### 1. Instalar dependencias
-Desde PowerShell en la carpeta del repositorio:
 ```powershell
 .venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-### 2. Ejecutar el ETL (limpieza de datos y carga a SQL Server)
+---
+
+### 2. Preparación y limpieza de datos (Python — **completado**)
+Genera el dataset limpio en `data/processed/clean/`:
+```powershell
+.venv\Scripts\python.exe -m src.etl.etl
+```
+> Esto ejecuta `src/etl/etl.py` que llama a `limpiar_datos()` de `src/etl/limpieza.py`.
+> El resultado: `data/processed/clean/online_shoppers_intention_clean.csv` (12,205 filas, 18 variables).
+
+---
+
+### 3. Crear y validar el Data Mart en SQL Server (**completado**)
+
+**Primera vez (crear esquema):**
+1. Abrir SSMS y conectar a `(localdb)\MSSQLLocalDB`.
+2. Ejecutar `sql/ddl/01_crear_base_y_datamart.sql`.
+   - Crea base `ECBD_Compradores`, tabla `StgSesiones`, 6 dimensiones, `FactSesion`.
+
+**Cargar datos y validar (implementación Python de preparación):**
 ```powershell
 .venv\Scripts\python.exe -m src.etl.etl --cargar-sql
 ```
-Esto genera `data/processed/clean/online_shoppers_intention_clean.csv` **y** carga los datos a SQL Server.
+> Inserta en staging, popula dimensiones con `MERGE`, inserta en `FactSesion`, valida conteos.
+> **Es la carga de preparación**; el ETL definitivo irá en SSIS.
 
-> **Nota:** El ETL se ejecuta como módulo (`-m src.etl.etl`) porque utiliza importaciones relativas (`from .limpieza import limpiar_datos`).
-> El flag `--cargar-sql` activa la carga a SQL Server mediante `src/etl/cargar_sql.py`.
+**Validar en SQL:**
+Ejecutar `sql/dml/02_cargar_dataset.sql` en SSMS (conteos, FK, muestra).
 
-### 3. Crear la base de datos (SQL Server)
-1. Abrir SQL Server Management Studio (SSMS).
-2. Ejecutar `sql/ddl/01_crear_base_y_datamart.sql`.
-   - Esto crea la base `ECBD_Compradores`, la tabla `StgSesiones`, las 6 dimensiones y `FactSesion`.
-   - **Debe ejecutarse antes de la carga desde Python.**
+**Reiniciar tablas durante desarrollo SSIS (idempotente):**
+- SQL: `sql/ddl/00_reiniciar_datamart.sql` (F5 en SSMS)
+- Python: `python -m src.etl.reset_datamart`
+- Notebook: `notebooks/unidad_ii_datamart/00_reiniciar_datamart_python.ipynb`
 
-### 4. Validar la carga (opcional)
-En SSMS, ejecutar `sql/dml/02_cargar_dataset.sql` para verificar:
-- Conteo de filas en staging, hechos y dimensiones.
-- Integridad referencial (FK sin correspondencia).
-- Muestra de datos en `FactSesion`.
+---
 
-### 4. Entrenar modelos (opcional, si quieres regenerarlos)
-Abrir y ejecutar todas las celdas de `notebooks/unidad_iii_supervisado/03_modelos_supervisados.ipynb`.
+### 4. ETL definitivo — **Pendiente (SSIS en Visual Studio)**
+El paquete SSIS reemplazará la carga Python (`src/etl/etl.py --cargar-sql` + `cargar_sql.py`).
+Los scripts Python actuales sirven para:
+- Validar el diseño del Data Mart.
+- Probar transformaciones y mapeos.
+- Apoyar el desarrollo del paquete SSIS.
 
-### 5. Ejecutar clustering y PCA (opcional)
-Abrir y ejecutar todas las celdas de `notebooks/unidad_iv_no_supervisado/04_clustering_pca.ipynb`.
+---
 
-### 6. Abrir el dashboard
+### 5. Modelos supervisados (**completado**)
+Entrenados y guardados en `modelos/`:
 ```powershell
-.venv\Scripts\python.exe -m streamlit run dashboard\app.py
+# Regresión y Clasificación
+notebooks/unidad_iii_supervisado/03_modelos_supervisados.ipynb
 ```
 
 ---
 
-## Guía rápida: ¿qué responder si te preguntan?
+### 6. Clustering y PCA (**completado**)
+```powershell
+notebooks/unidad_iv_no_supervisado/04_clustering_pca.ipynb
+```
+Resultados en `data/processed/clustering/`, `data/processed/pca/`, `docs/evidencias/`.
 
-| Pregunta | Respuesta breve |
-|----------|-----------------|
-| ¿De qué trata el proyecto? | Analizar sesiones de compras online para predecir si hay compra y cuánto duran en páginas de producto, usando ETL, Data Mart, modelos supervisados, clustering y un dashboard. |
-| ¿Qué hace `src/etl/etl.py`? | Lee el CSV original, aplica limpieza (duplicados y normalización de mes) y guarda el archivo procesado. |
-| ¿Qué hace `src/etl/limpieza.py`? | Tiene funciones para diagnosticar faltantes, duplicados, negativos y categorías, y la función principal `limpiar_datos()`. |
-| ¿Qué modelo usaste para predecir compra? | Random Forest (clasificación), con F1 ≈ 0.688 y ROC AUC ≈ 0.929. |
-| ¿Qué modelo usaste para predecir duración? | Random Forest (regresión), con MAE ≈ 510.76 s y R² ≈ 0.715. |
-| ¿Qué hace el dashboard? | Muestra KPIs, gráficas por mes/visitante/cluster y métricas de modelos, con filtros interactivos. |
-| ¿Cuál es el esquema de la base? | Esquema estrella: una tabla de hechos `FactSesion` (una fila por sesión) y seis dimensiones (mes, visitante, SO, navegador, región, tráfico). |
-| ¿Quién escribió el código? | Desarrollé el proyecto con asistencia de Codex (IA); yo revisé, ejecuté y validé cada componente. |
+---
+
+### 7. Dashboard Streamlit — Herramienta complementaria (**disponible**)
+```powershell
+.venv\Scripts\python.exe -m streamlit run dashboard\app.py
+```
+> Para exploración interactiva. **El dashboard final de entrega será en Power BI.**
+
+---
+
+### 8. Dashboard final — **Pendiente (Power BI)**
+Conectar Power BI a la base `ECBD_Compradores` (esquema estrella) y construir el informe de entrega.
+
 
 ---
 
@@ -448,77 +478,34 @@ Se completó la documentación según las observaciones del profesor y se corrig
 
 ---
 
-## Cómo ejecutar todo, paso a paso (actualizado)
-
-### 1. Instalar dependencias
-```powershell
-.venv\Scripts\python.exe -m pip install -r requirements.txt
-```
-
-### 2. Ejecutar el ETL (limpieza + carga a SQL Server)
-```powershell
-.venv\Scripts\python.exe -m src.etl.etl --cargar-sql
-```
-
-### 3. Crear/reiniciar la base de datos (SQL Server)
-
-**Opción A — Primera vez (crear todo):**
-```powershell
-# En SSMS: ejecutar sql/ddl/01_crear_base_y_datamart.sql
-```
-
-**Opción B — Reinicio durante desarrollo SSIS (ya existe la base):**
-```powershell
-# SQL (SSMS):
-#   Ejecutar sql/ddl/00_reiniciar_datamart.sql  (F5)
-
-# Python (terminal):
-python -m src.etl.reset_datamart
-
-# Notebook:
-#   Abrir notebooks/unidad_ii_datamart/00_reiniciar_datamart_python.ipynb y ejecutar
-```
-
-### 4. Validar la carga (opcional)
-En SSMS, ejecutar `sql/dml/02_cargar_dataset.sql`.
-
-### 5. Entrenar modelos (opcional)
-Ejecutar `notebooks/unidad_iii_supervisado/03_modelos_supervisados.ipynb`.
-
-### 6. Clustering y PCA (opcional)
-Ejecutar `notebooks/unidad_iv_no_supervisado/04_clustering_pca.ipynb`.
-
-### 7. Dashboard
-```powershell
-.venv\Scripts\python.exe -m streamlit run dashboard\app.py
-```
-
----
-
-## Guía rápida: ¿qué responder si te preguntan? (actualizada)
+## Guía rápida: ¿qué responder si te preguntan?
 
 | Pregunta | Respuesta breve |
 |----------|-----------------|
-| ¿De qué trata el proyecto? | Analizar sesiones de compras online para predecir si hay compra y cuánto duran en páginas de producto, usando ETL, Data Mart, modelos supervisados, clustering y un dashboard. |
-| ¿Qué hace `src/etl/etl.py`? | Lee el CSV original, aplica limpieza (duplicados y normalización de mes) y guarda el archivo procesado. |
+| ¿De qué trata el proyecto? | Analizar sesiones de compras online para predecir si hay compra y cuánto duran en páginas de producto, usando Data Mart, modelos supervisados, clustering y dashboard. |
+| ¿Qué hace `src/etl/etl.py`? | Lee el CSV original, aplica limpieza (duplicados y normalización de mes) y guarda el archivo procesado. Es la **preparación de datos**, no el ETL definitivo. |
 | ¿Qué hace `src/etl/limpieza.py`? | Tiene funciones para diagnosticar faltantes, duplicados, negativos y categorías, y la función principal `limpiar_datos()`. |
 | **¿Qué hace `src/etl/reset_datamart.py`?** | **Elimina y reconstruye las 8 tablas del Data Mart (hechos + 6 dimensiones + staging) en orden correcto de FK, de forma idempotente, para permitir "reset" limpio durante desarrollo SSIS.** |
 | **¿Qué hace `sql/ddl/00_reiniciar_datamart.sql`?** | **Versión SQL del reset idempotente; se ejecuta en SSMS (F5) y hace lo mismo que el script Python.** |
+| **¿Dónde se implementa el ETL definitivo?** | **En SSIS (Visual Studio).** Los scripts Python (`src/etl/etl.py`, `cargar_sql.py`) son preparación, validación del diseño y apoyo al desarrollo del paquete SSIS. |
+| **¿Dónde estará el dashboard final?** | **En Power BI.** El dashboard Streamlit (`dashboard/app.py`) es herramienta complementaria y trabajo previo de exploración. |
 | ¿Qué modelo usaste para predecir compra? | Random Forest (clasificación), con F1 ≈ 0.688 y ROC AUC ≈ 0.929. |
 | ¿Qué modelo usaste para predecir duración? | Random Forest (regresión), con MAE ≈ 510.76 s y R² ≈ 0.715. |
-| ¿Qué hace el dashboard? | Muestra KPIs, gráficas por mes/visitante/cluster y métricas de modelos, con filtros interactivos. |
+| ¿Qué hace el dashboard Streamlit? | Muestra KPIs, gráficas por mes/visitante/cluster y métricas de modelos, con filtros interactivos. Herramienta de apoyo, no entrega final. |
 | ¿Cuál es el esquema de la base? | Esquema estrella: una tabla de hechos `FactSesion` (una fila por registro procesado) y seis dimensiones (mes, visitante, SO, navegador, región, tráfico). |
 | **¿Cuántos predictores usa la regresión?** | **16** (excluye `Revenue` y `ProductRelated_Duration`). |
 | **¿Cuál es el grano de FactSesion?** | **Una fila por registro procesado del dataset** (clave sustituta `SesionKey`, no hay clave natural de sesión única). |
-| ¿Quién escribió el código? | Desarrollé el proyecto con asistencia de Codex (IA); yo revisé, ejecuté y validé cada componente. |
+| ¿Quién escribió el código? | Desarrollé el proyecto con asistencia de herramientas de IA (Claude, Codex, GitHub Copilot); yo revisé, ejecuté y validé cada componente. |
 
 ---
 
 ## Pendiente para el cierre
 
+- **ETL definitivo en SSIS (Visual Studio)** — paquete que reemplace la carga Python actual.
+- **Dashboard final en Power BI** — conectado al esquema estrella de `ECBD_Compradores`.
 - Borrador ampliado y versión PDF del informe final.
 - Conclusiones y recomendaciones finales revisadas.
-- Defensa oral: ejecutar y explicar limpieza, ETL, Data Mart, métricas, clusters y dashboard.
+- Defensa oral: ejecutar y explicar limpieza, ETL (Python + SSIS), Data Mart, métricas, clusters y dashboards (Streamlit + Power BI).
 - Revisar observaciones del docente y actualizar los notebooks en consecuencia.
 
 ---
