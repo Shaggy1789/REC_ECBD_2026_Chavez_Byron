@@ -79,6 +79,7 @@ REC_ECDB_2026_ChavezMolina_Byron/
     ├── etl/
     │   ├── etl.py               # Orquesta la lectura, limpieza y guardado del dataset procesado
     │   ├── limpieza.py          # Funciones de limpieza y diagnóstico de datos
+    │   ├── cargar_sql.py        # Carga el CSV limpio a SQL Server (staging → dimensiones → hechos)
     │   └── reset_datamart.py    # NUEVO: Script Python (pyodbc) para reiniciar Data Mart
     ├── exploracion/
     │   └── exploracion.py       # Funciones básicas de exploración (head, shape, columnas, etc.)
@@ -111,13 +112,14 @@ El ETL (`src/etl/etl.py`) lee el archivo original, aplica la limpieza y guarda e
 
 Aquí va una explicación línea por línea de lo que hace cada módulo, para que lo sepas de memoria.
 
-### `src/etl/etl.py` — Orquestador del ETL
-Es el punto de entrada para procesar los datos. Al ejecutarlo:
+### `src/etl/etl.py` — Preparación y limpieza de datos (no es el ETL definitivo)
+Orquesta la lectura, limpieza y guardado del dataset procesado. Al ejecutarlo:
 1. Lee `data/raw/online_shoppers_intention.csv`.
 2. Llama a `limpiar_datos()` de `src/etl/limpieza.py`.
 3. Crea la carpeta `data/processed/clean/` si no existe.
 4. Guarda el resultado en `data/processed/clean/online_shoppers_intention_clean.csv`.
 5. Imprime un resumen: filas originales, duplicados eliminados, filas finales y faltantes restantes.
+> Con la opción `--cargar-sql` también inserta en SQL Server (etapa de preparación; el ETL definitivo será en SSIS).
 
 ### `src/etl/limpieza.py` — Limpieza y diagnóstico
 Contiene funciones reutilizables para inspeccionar y limpiar el dataset (el proceso completo está documentado paso a paso en `notebooks/unidad_ii_exploracion/02_Limpieza de datos.ipynb`):
@@ -203,6 +205,7 @@ Cada notebook es ejecutable y corresponde a una parte del proyecto, organizado p
 | `unidad_ii_exploracion/01_revision_datos.ipynb` | Revisión inicial del dataset: dimensiones, tipos, faltantes, duplicados, primeras filas. |
 | `unidad_ii_exploracion/02_Limpieza de datos.ipynb` | Limpieza documentada paso a paso: eliminación de 125 duplicados, normalización `June`→`Jun`, validación de dominio (sin negativos), validación de categorías, guardado en `data/processed/clean/`. |
 | `unidad_ii_exploracion/ChavezMolina_Byron_U2_AE1_Exploracion.ipynb` | Exploración y diagnóstico completo con diccionario de variables. |
+| `unidad_ii_datamart/00_reiniciar_datamart_python.ipynb` | Documenta y ejecuta el reinicio idempotente del Data Mart (versión Python). |
 | `unidad_ii_datamart/02_diseno_base_datos_datamart.ipynb` | Documenta el diseño del esquema estrella y el Data Mart. |
 | `unidad_iii_supervisado/03_modelos_supervisados.ipynb` | Entrena modelos de regresión y clasificación; guarda modelos y métricas en `modelos/`. |
 | `unidad_iv_no_supervisado/04_clustering_pca.ipynb` | Ejecuta K-Means (K=2 a K=6) y PCA; guarda clusterizaciones, coordenadas y gráfica. |
