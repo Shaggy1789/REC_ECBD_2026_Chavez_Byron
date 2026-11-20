@@ -106,15 +106,15 @@ El ETL (`src/etl/etl.py`) lee el archivo original, aplica la limpieza y guarda e
 
 Aquí va una explicación línea por línea de lo que hace cada módulo, para que lo sepas de memoria.
 
-### `src/etl.py` — Orquestador del ETL
+### `src/etl/etl.py` — Orquestador del ETL
 Es el punto de entrada para procesar los datos. Al ejecutarlo:
 1. Lee `data/raw/online_shoppers_intention.csv`.
-2. Llama a `limpiar_datos()` de `src/limpieza.py`.
-3. Crea la carpeta `data/processed/` si no existe.
-4. Guarda el resultado en `data/processed/online_shoppers_intention_clean.csv`.
+2. Llama a `limpiar_datos()` de `src/etl/limpieza.py`.
+3. Crea la carpeta `data/processed/clean/` si no existe.
+4. Guarda el resultado en `data/processed/clean/online_shoppers_intention_clean.csv`.
 5. Imprime un resumen: filas originales, duplicados eliminados, filas finales y faltantes restantes.
 
-### `src/limpieza.py` — Limpieza y diagnóstico
+### `src/etl/limpieza.py` — Limpieza y diagnóstico
 Contiene funciones reutilizables para inspeccionar y limpiar el dataset:
 
 - `revisar_valores_faltantes(datos)` → devuelve cuántos y qué porcentaje de faltantes hay por columna.
@@ -123,7 +123,7 @@ Contiene funciones reutilizables para inspeccionar y limpiar el dataset:
 - `revisar_categorias(datos)` → lista los valores únicos de cada columna categórica.
 - `limpiar_datos(datos)` → función principal: copia los datos, elimina duplicados, normaliza `Month` y devuelve el DataFrame limpio junto con un resumen de cambios.
 
-### `src/exploracion.py` — Exploración básica
+### `src/exploracion/exploracion.py` — Exploración básica
 Funciones pequeñas para entender el dataset al inicio:
 
 - `mostrar_primeros_registros(datos, cantidad=5)` → muestra las primeras filas (`head`).
@@ -132,7 +132,7 @@ Funciones pequeñas para entender el dataset al inicio:
 - `mostrar_tipos_datos(datos)` → devuelve el tipo de cada columna (`dtypes`).
 - `mostrar_resumen(datos)` → devuelve estadísticas descriptivas (`describe`).
 
-### `src/visualizacion.py` — Gráficas exploratorias
+### `src/visualizacion/visualizacion.py` — Gráficas exploratorias
 Gráficas iniciales con matplotlib y seaborn:
 
 - `grafica_tipo_visitante(datos)` → barras de sesiones por tipo de visitante.
@@ -205,8 +205,8 @@ Todas las métricas se guardan en CSV dentro de `modelos/metricas/` para que el 
 
 ## Análisis no supervisado (`notebooks/unidad_iv_no_supervisado/04_clustering_pca.ipynb` y `docs/`)
 
-- **K-Means:** se probó de K=2 a K=6 clusters. K=2 obtuvo silhouette muestrado de 0.694.
-- **PCA:** se transformaron y escalaron las variables sesgadas; dos componentes explican el 81.8% de la varianza.
+- **K-Means:** se probó de K=2 a K=6 clusters. K=2 obtuvo silhouette muestrado de 0.934.
+- **PCA:** se transformaron y escalaron las variables sesgadas; dos componentes explican el 99.9% de la varianza.
 - **Resultados:**
   - `data/processed/clustering/sesiones_clusterizadas.csv` — cada sesión con su cluster.
   - `data/processed/pca/coordenadas_pca.csv` — coordenadas para graficar.
@@ -247,9 +247,11 @@ Desde PowerShell en la carpeta del repositorio:
 
 ### 2. Ejecutar el ETL (limpieza de datos)
 ```powershell
-.venv\Scripts\python.exe src\etl\etl.py
+.venv\Scripts\python.exe -m src.etl.etl
 ```
 Esto genera `data/processed/clean/online_shoppers_intention_clean.csv`.
+
+> **Nota:** El ETL se ejecuta como módulo (`-m src.etl.etl`) porque utiliza importaciones relativas (`from .limpieza import limpiar_datos`).
 
 ### 3. Crear y cargar la base de datos (SQL Server)
 1. Abrir SQL Server Management Studio (SSMS).
