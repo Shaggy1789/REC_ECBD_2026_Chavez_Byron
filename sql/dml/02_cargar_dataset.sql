@@ -6,7 +6,7 @@ Se puede volver a ejecutar: staging se recarga y FactSesion se reconstruye.
 USE ECBD_Compradores;
 GO
 
-DECLARE @ArchivoCsv NVARCHAR(4000) = N'C:\Users\chave\REC_ECDB_2026_ChavezMolina_Byron\data\processed\online_shoppers_intention_clean.csv';
+DECLARE @ArchivoCsv NVARCHAR(4000) = N'C:\Users\chave\REC_ECDB_2026_ChavezMolina_Byron\data\processed\clean\online_shoppers_intention_clean.csv';
 DECLARE @Comando NVARCHAR(MAX);
 
 TRUNCATE TABLE dbo.StgSesiones;

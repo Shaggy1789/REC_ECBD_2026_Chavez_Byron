@@ -2,12 +2,12 @@ from pathlib import Path
 
 import pandas as pd
 
-from limpieza import limpiar_datos
+from .limpieza import limpiar_datos
 
-RAIZ_PROYECTO = Path(__file__).resolve().parents[1]
+RAIZ_PROYECTO = Path(__file__).resolve().parents[2]
 ARCHIVO_ORIGINAL = RAIZ_PROYECTO / "data" / "raw" / "online_shoppers_intention.csv"
 ARCHIVO_PROCESADO = (
-    RAIZ_PROYECTO / "data" / "processed" / "online_shoppers_intention_clean.csv"
+    RAIZ_PROYECTO / "data" / "processed" / "clean" / "online_shoppers_intention_clean.csv"
 )
 
 def ejecutar_etl():

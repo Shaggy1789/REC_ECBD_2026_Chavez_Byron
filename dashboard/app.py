@@ -6,10 +6,10 @@ import plotly.express as px
 import streamlit as st
 
 ROOT = Path(__file__).resolve().parents[1]
-PROCESSED_CSV = ROOT / "data" / "processed" / "online_shoppers_intention_clean.csv"
-CLUSTER_CSV = ROOT / "data" / "processed" / "sesiones_clusterizadas.csv"
-CLASS_METRICS = ROOT / "modelos" / "metricas_clasificacion.csv"
-REG_METRICS = ROOT / "modelos" / "metricas_regresion.csv"
+PROCESSED_CSV = ROOT / "data" / "processed" / "clean" / "online_shoppers_intention_clean.csv"
+CLUSTER_CSV = ROOT / "data" / "processed" / "clustering" / "sesiones_clusterizadas.csv"
+CLASS_METRICS = ROOT / "modelos" / "metricas" / "metricas_clasificacion.csv"
+REG_METRICS = ROOT / "modelos" / "metricas" / "metricas_regresion.csv"
 
 st.set_page_config(
     page_title="Compradores ecommerce",
@@ -151,7 +151,7 @@ with right:
         fig_cluster.update_yaxes(tickformat=".0%")
         st.plotly_chart(fig_cluster, use_container_width=True)
     else:
-        st.info("Ejecuta `notebooks/04_clustering_pca.ipynb` para agregar el análisis por cluster.")
+        st.info("Ejecuta `notebooks/unidad_iv_no_supervisado/04_clustering_pca.ipynb` para agregar el análisis por cluster.")
 
 st.subheader("Resultados de modelos supervisados")
 reg, clas = st.columns(2)
@@ -161,14 +161,14 @@ with reg:
     if not metricas_reg.empty:
         st.dataframe(metricas_reg.round(3), hide_index=True, use_container_width=True)
     else:
-        st.info("Ejecuta `notebooks/03_modelos_supervisados.ipynb` para generar métricas.")
+        st.info("Ejecuta `notebooks/unidad_iii_supervisado/03_modelos_supervisados.ipynb` para generar métricas.")
 with clas:
     st.markdown("**Clasificación: resultado de compra**")
     metricas_clas = cargar_metricas(CLASS_METRICS)
     if not metricas_clas.empty:
         st.dataframe(metricas_clas.round(3), hide_index=True, use_container_width=True)
     else:
-        st.info("Ejecuta `notebooks/03_modelos_supervisados.ipynb` para generar métricas.")
+        st.info("Ejecuta `notebooks/unidad_iii_supervisado/03_modelos_supervisados.ipynb` para generar métricas.")
 
 st.caption(
     "Las tasas describen asociaciones en las sesiones seleccionadas; no demuestran que una variable cause la compra. "
