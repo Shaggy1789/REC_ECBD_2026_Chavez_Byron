@@ -93,7 +93,7 @@ REC_ECDB_2026_ChavezMolina_Byron/
 | `data/processed/clustering/sesiones_clusterizadas.csv` | Igual al limpio, pero con una columna extra `Cluster` (asignación de K-Means). |
 | `data/processed/pca/coordenadas_pca.csv` | Coordenadas de las sesiones en los dos componentes principales de PCA. |
 
-**Limpieza realizada (`src/limpieza.py`):**
+**Limpieza realizada (`src/etl/limpieza.py`):**
 - Se eliminan **filas duplicadas exactas** (se detectaron 125 duplicados).
 - Se normaliza la columna `Month`: se reemplaza `"June"` por `"Jun"` para homogeneizar los nombres de mes.
 - Se verifica que no queden valores faltantes ni valores negativos inesperados en columnas numéricas.
@@ -218,7 +218,7 @@ Todas las métricas se guardan en CSV dentro de `modelos/metricas/` para que el 
 
 Aplicación de Streamlit para explorar los resultados con filtros y gráficas.
 
-**Cómo se ejecra:**
+**Cómo se ejecuta:**
 ```powershell
 .venv\Scripts\python.exe -m streamlit run dashboard\app.py
 ```

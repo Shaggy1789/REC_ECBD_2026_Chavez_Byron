@@ -30,9 +30,9 @@ Se predijo `Revenue=True` como la clase de compra. En el conjunto de prueba, Ran
 
 ### 5. Análisis no supervisado
 
-K-Means se ajustó sin utilizar `Revenue`, con variables de navegación transformadas con `log1p` cuando presentaban sesgo y posteriormente escaladas de forma robusta. Entre K=2 y K=6, K=2 alcanzó silhouette muestreado de 0.694. El grupo mayor reunió 11,411 sesiones y tuvo tasa de compra de 16.7%; el grupo pequeño reunió 794 sesiones y tuvo tasa de compra de 0.6%, mediana de una página de producto y duración mediana de cero segundos. Esto sugiere un grupo de sesiones con interacción muy baja, aunque las diferencias no demuestran causalidad.
+K-Means se ajustó sin utilizar `Revenue`, con variables de navegación escaladas de forma robusta (RobustScaler). Entre K=2 y K=6, K=2 alcanzó silhouette muestreado de 0.934. El grupo mayor (Cluster 0) reunió 11,949 sesiones y tuvo tasa de compra de 15.4%; el grupo pequeño (Cluster 1) reunió 256 sesiones y tuvo tasa de compra de 27.7%, mediana de 57 páginas de producto y duración mediana de 2,362.9 segundos. Esto sugiere un grupo de sesiones con alta interacción y mayor intención de compra.
 
-Los dos primeros componentes de PCA explicaron 81.8% de la varianza después de la transformación y el escalado. PC1 explicó 60.0% y su mayor carga absoluta correspondió a `BounceRates`.
+Los dos primeros componentes de PCA explicaron 99.9% de la varianza después del escalado robusto. PC1 explicó 98.2% y su mayor carga absoluta correspondió a `BounceRates`.
 
 ### 6. Dashboard
 
@@ -54,12 +54,12 @@ El cluster pequeño tiene una tasa de compra mucho menor y señales de interacci
 
 ### 9. Evidencia del proyecto
 
-- Exploración: `notebooks/ChavezMolina_Byron_U2_AE1_Exploracion.ipynb`.
-- Diseño de base y Data Mart: `notebooks/02_diseno_base_datos_datamart.ipynb`.
-- Modelos supervisados: `notebooks/03_modelos_supervisados.ipynb`.
-- Clustering y PCA: `notebooks/04_clustering_pca.ipynb`.
-- SQL: `sql/01_crear_base_y_datamart.sql` y `sql/02_cargar_dataset.sql`.
+- Exploración: `notebooks/unidad_ii_exploracion/01_revision_datos.ipynb` y `notebooks/unidad_ii_exploracion/ChavezMolina_Byron_U2_AE1_Exploracion.ipynb`.
+- Diseño de base y Data Mart: `notebooks/unidad_ii_datamart/02_diseno_base_datos_datamart.ipynb`.
+- Modelos supervisados: `notebooks/unidad_iii_supervisado/03_modelos_supervisados.ipynb`.
+- Clustering y PCA: `notebooks/unidad_iv_no_supervisado/04_clustering_pca.ipynb`.
+- SQL: `sql/ddl/01_crear_base_y_datamart.sql` y `sql/dml/02_cargar_dataset.sql`.
 - Dashboard: `dashboard/app.py`.
-- Diagrama: `docs/diagrama_data_mart.md`.
+- Diagrama: `docs/data_mart/diagrama_data_mart.md`.
 
 Este documento es un borrador. Debe revisarse con las observaciones del docente y complementarse con las decisiones finales y la defensa oral.
