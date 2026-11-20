@@ -60,6 +60,7 @@ REC_ECDB_2026_ChavezMolina_Byron/
 ├── notebooks/
 │   ├── unidad_ii_exploracion/
 │   │   ├── 01_revision_datos.ipynb           # Revisión inicial del dataset
+│   │   ├── 02_Limpieza de datos.ipynb        # Limpieza paso a paso: duplicados, estandarización de meses, validaciones
 │   │   └── ChavezMolina_Byron_U2_AE1_Exploracion.ipynb  # Exploración y diagnóstico completo
 │   ├── unidad_ii_datamart/
 │   │   └── 02_diseno_base_datos_datamart.ipynb  # Diseño del Data Mart
@@ -93,10 +94,11 @@ REC_ECDB_2026_ChavezMolina_Byron/
 | `data/processed/clustering/sesiones_clusterizadas.csv` | Igual al limpio, pero con una columna extra `Cluster` (asignación de K-Means). |
 | `data/processed/pca/coordenadas_pca.csv` | Coordenadas de las sesiones en los dos componentes principales de PCA. |
 
-**Limpieza realizada (`src/etl/limpieza.py`):**
+**Limpieza realizada (`src/etl/limpieza.py` y documentada en `notebooks/unidad_ii_exploracion/02_Limpieza de datos.ipynb`):**
 - Se eliminan **filas duplicadas exactas** (se detectaron 125 duplicados).
 - Se normaliza la columna `Month`: se reemplaza `"June"` por `"Jun"` para homogeneizar los nombres de mes.
 - Se verifica que no queden valores faltantes ni valores negativos inesperados en columnas numéricas.
+- Se validan las categorías de todas las variables categóricas.
 
 El ETL (`src/etl/etl.py`) lee el archivo original, aplica la limpieza y guarda el resultado en `data/processed/clean/online_shoppers_intention_clean.csv`.
 
@@ -115,7 +117,7 @@ Es el punto de entrada para procesar los datos. Al ejecutarlo:
 5. Imprime un resumen: filas originales, duplicados eliminados, filas finales y faltantes restantes.
 
 ### `src/etl/limpieza.py` — Limpieza y diagnóstico
-Contiene funciones reutilizables para inspeccionar y limpiar el dataset:
+Contiene funciones reutilizables para inspeccionar y limpiar el dataset (el proceso completo está documentado paso a paso en `notebooks/unidad_ii_exploracion/02_Limpieza de datos.ipynb`):
 
 - `revisar_valores_faltantes(datos)` → devuelve cuántos y qué porcentaje de faltantes hay por columna.
 - `revisar_duplicados(datos)` → cuenta filas duplicadas exactas.
@@ -194,6 +196,7 @@ Cada notebook es ejecutable y corresponde a una parte del proyecto, organizado p
 | Notebook | Qué hace |
 |----------|----------|
 | `unidad_ii_exploracion/01_revision_datos.ipynb` | Revisión inicial del dataset: dimensiones, tipos, faltantes, duplicados, primeras filas. |
+| `unidad_ii_exploracion/02_Limpieza de datos.ipynb` | Limpieza documentada paso a paso: eliminación de 125 duplicados, normalización `June`→`Jun`, validación de dominio (sin negativos), validación de categorías, guardado en `data/processed/clean/`. |
 | `unidad_ii_exploracion/ChavezMolina_Byron_U2_AE1_Exploracion.ipynb` | Exploración y diagnóstico completo con diccionario de variables. |
 | `unidad_ii_datamart/02_diseno_base_datos_datamart.ipynb` | Documenta el diseño del esquema estrella y el Data Mart. |
 | `unidad_iii_supervisado/03_modelos_supervisados.ipynb` | Entrena modelos de regresión y clasificación; guarda modelos y métricas en `modelos/`. |
