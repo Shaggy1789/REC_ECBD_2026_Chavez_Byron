@@ -148,7 +148,24 @@ Se diseña un **esquema estrella** con una tabla de hechos y seis dimensiones. E
 ### Archivos SQL
 
 - `sql/ddl/01_crear_base_y_datamart.sql` — Crea la base de datos `ECBD_Compradores`, las tablas de dimensiones y la tabla de hechos con sus claves primarias y foráneas.
-- `sql/dml/02_cargar_dataset.sql` — Carga el CSV limpio en una tabla temporal (`StgSesiones`), pobla las dimensiones y finalmente inserta en `FactSesion`.
+- `sql/dml/02_cargar_dataset.sql` — **Validación** de la carga realizada desde Python. Verifica conteos, integridad referencial y muestra una muestra de datos.
+
+### Carga de datos
+
+La carga del CSV procesado a SQL Server se realiza mediante Python:
+
+```powershell
+.venv\Scripts\python.exe -m src.etl.etl --cargar-sql
+```
+
+Este comando:
+1. Lee `data/processed/clean/online_shoppers_intention_clean.csv`.
+2. Inserta los datos en `StgSesiones` (staging).
+3. Pobla las 6 dimensiones con `MERGE` (upsert) para evitar duplicados.
+4. Inserta en `FactSesion` usando consultas parametrizadas por lotes.
+5. Valida que el conteo de staging coincida con `FactSesion`.
+
+> No se usa `BULK INSERT` ni SQL puro para la carga. El script SQL `sql/dml/02_cargar_dataset.sql` solo valida.
 
 ### Esquema (resumido)
 
@@ -245,19 +262,26 @@ Desde PowerShell en la carpeta del repositorio:
 .venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-### 2. Ejecutar el ETL (limpieza de datos)
+### 2. Ejecutar el ETL (limpieza de datos y carga a SQL Server)
 ```powershell
-.venv\Scripts\python.exe -m src.etl.etl
+.venv\Scripts\python.exe -m src.etl.etl --cargar-sql
 ```
-Esto genera `data/processed/clean/online_shoppers_intention_clean.csv`.
+Esto genera `data/processed/clean/online_shoppers_intention_clean.csv` **y** carga los datos a SQL Server.
 
 > **Nota:** El ETL se ejecuta como módulo (`-m src.etl.etl`) porque utiliza importaciones relativas (`from .limpieza import limpiar_datos`).
+> El flag `--cargar-sql` activa la carga a SQL Server mediante `src/etl/cargar_sql.py`.
 
-### 3. Crear y cargar la base de datos (SQL Server)
+### 3. Crear la base de datos (SQL Server)
 1. Abrir SQL Server Management Studio (SSMS).
 2. Ejecutar `sql/ddl/01_crear_base_y_datamart.sql`.
-3. En `sql/dml/02_cargar_dataset.sql`, ajustar la variable `@ArchivoCsv` si el repositorio está en otra ruta.
-4. Ejecutar `sql/dml/02_cargar_dataset.sql`.
+   - Esto crea la base `ECBD_Compradores`, la tabla `StgSesiones`, las 6 dimensiones y `FactSesion`.
+   - **Debe ejecutarse antes de la carga desde Python.**
+
+### 4. Validar la carga (opcional)
+En SSMS, ejecutar `sql/dml/02_cargar_dataset.sql` para verificar:
+- Conteo de filas en staging, hechos y dimensiones.
+- Integridad referencial (FK sin correspondencia).
+- Muestra de datos en `FactSesion`.
 
 ### 4. Entrenar modelos (opcional, si quieres regenerarlos)
 Abrir y ejecutar todas las celdas de `notebooks/unidad_iii_supervisado/03_modelos_supervisados.ipynb`.

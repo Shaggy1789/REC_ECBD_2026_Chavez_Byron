@@ -10,7 +10,14 @@ ARCHIVO_PROCESADO = (
     RAIZ_PROYECTO / "data" / "processed" / "clean" / "online_shoppers_intention_clean.csv"
 )
 
-def ejecutar_etl():
+
+def ejecutar_etl(cargar_sql=False):
+    """
+    Ejecuta el ETL completo.
+
+    Args:
+        cargar_sql: Si True, también carga los datos a SQL Server después de procesar.
+    """
     datos_originales = pd.read_csv(ARCHIVO_ORIGINAL)
     datos_limpios, resumen = limpiar_datos(datos_originales)
 
@@ -21,6 +28,16 @@ def ejecutar_etl():
     print(f"Archivo generado: {ARCHIVO_PROCESADO}")
     print(f"Resumen: {resumen}")
 
+    if cargar_sql:
+        print("\nIniciando carga a SQL Server...")
+        from .cargar_sql import cargar_a_sql_server
+
+        cargar_a_sql_server()
+
 
 if __name__ == "__main__":
-    ejecutar_etl()
+    import sys
+
+    # Permitir pasar --cargar-sql como argumento
+    cargar_sql = "--cargar-sql" in sys.argv
+    ejecutar_etl(cargar_sql=cargar_sql)
