@@ -49,7 +49,7 @@ COLUMNAS_ESPERADAS = [
 
 def obtener_conexion():
     """Crea y devuelve una conexión a la base de datos."""
-    return pyodbc.connect(CONEXION_STR, autocommit=False)
+    return pyodbc.connect(CONEXION_STR, autocommit=False, timeout=30)
 
 
 def truncar_tabla(conexion, nombre_tabla):
@@ -420,9 +420,9 @@ def cargar_a_sql_server():
             raise ValueError(
                 f"Conteo inconsistente: staging={counts['staging']}, hechos={counts['hechos']}"
             )
-        if counts["staging"] != 12205:
+        if counts["staging"] != len(datos):
             raise ValueError(
-                f"Se esperaban 12,205 filas, se cargaron {counts['staging']}"
+                f"Se esperaban {len(datos):,} filas, se cargaron {counts['staging']:,}"
             )
 
         # Commit único al final de toda la carga
