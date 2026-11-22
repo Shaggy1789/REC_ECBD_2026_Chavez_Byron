@@ -1,6 +1,6 @@
 # Análisis del comportamiento de compradores en comercio electrónico
 
-**Proyecto desarrollado con asistencia de herramientas de IA.** El código, los scripts SQL, los notebooks, los dashboards y este documento se elaboraron con apoyo de asistentes de IA (Claude, Codex, GitHub Copilot), y fueron revisados, ejecutados y validados manualmente. Este README está escrito para que puedas leerlo, entender cada pieza del proyecto y responder con seguridad cuando te pregunten sobre tu código.
+Proyecto académico para el análisis de sesiones de comercio electrónico usando el Online Shoppers Purchasing Intention Dataset. El código, los scripts SQL, los notebooks, los dashboards y este documento fueron revisados, ejecutados y validados manualmente. Este README está escrito para que puedas leerlo, entender cada pieza del proyecto y responder con seguridad cuando te pregunten sobre tu código.
 
 ---
 
@@ -498,7 +498,7 @@ Se completó la documentación según las observaciones del profesor y se corrig
 | ¿Cuál es el esquema de la base? | Esquema estrella: una tabla de hechos `FactSesion` (una fila por registro procesado) y seis dimensiones (mes, visitante, SO, navegador, región, tráfico). |
 | **¿Cuántos predictores usa la regresión?** | **16** (excluye `Revenue` y `ProductRelated_Duration`). |
 | **¿Cuál es el grano de FactSesion?** | **Una fila por registro procesado del dataset** (clave sustituta `SesionKey`, no hay clave natural de sesión única). |
-| ¿Quién escribió el código? | Desarrollé el proyecto con asistencia de herramientas de IA (Claude, Codex, GitHub Copilot); yo revisé, ejecuté y validé cada componente. |
+| ¿Quién escribió el código? | Desarrollé el proyecto; revisé, ejecuté y validé cada componente manualmente. |
 
 ---
 

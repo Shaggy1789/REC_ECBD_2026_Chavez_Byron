@@ -292,4 +292,4 @@ powerbi/
 
 ---
 
-*Documento generado para el proyecto REC_ECDB_2026_ChavezMolina_Byron. El dashboard se construye manualmente en Power BI Desktop siguiendo estos pasos; este README sirve como guia y documentacion del diseno.*
+*Documento del proyecto REC_ECDB_2026_ChavezMolina_Byron. El dashboard se construye manualmente en Power BI Desktop siguiendo estos pasos; este README sirve como guia y documentacion del diseno.*
